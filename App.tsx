@@ -5,10 +5,8 @@
  * @format
  */
 
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
-  Alert,
-  FlatList,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -19,6 +17,37 @@ import {
 
 function App(): React.JSX.Element {
   const [inputValue, setInputValue] = useState('');
+  const [result, setResult] = useState('');
+
+  const handleSubmit = () => {
+    if (inputValue.length == 0) {
+      setResult(`Result: ${0}`);
+      return;
+    }
+
+    const inputData = inputValue.split('');
+    let totalresult = 0;
+    let nagetivVal = '';
+    let isNagitive = false;
+
+    inputData.forEach((value, index) => {
+      if (!!value && !isNaN(+value)) {
+        if (isNagitive) {
+          nagetivVal += nagetivVal.length > 0 ? ', -' + value : '-' + value;
+          isNagitive = false;
+        } else totalresult += Number(value);
+      } else if (value == '-') {
+        isNagitive = true;
+      } else {
+        isNagitive = false;
+      }
+    });
+    if (nagetivVal.length > 0) {
+      setResult(`Error: Nagative number is not allowed (${nagetivVal})`);
+    } else {
+      setResult(`Result: ${totalresult}`);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -31,17 +60,27 @@ function App(): React.JSX.Element {
       />
       <TouchableOpacity
         style={styles.btnStyle}
-        onPress={() => {}}
+        onPress={() => handleSubmit()}
         testID="handleSubmit">
         <Text style={styles.btnName}>Submit</Text>
       </TouchableOpacity>
-
+      {result.length > 0 && (
+        <Text style={styles.resultText} testID="result">
+          {result}
+        </Text>
+      )}
       <SafeAreaView />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  resultText: {
+    color: 'red',
+    fontWeight: '700',
+    marginTop: 10,
+    alignSelf: 'center',
+  },
   btnName: {
     color: 'white',
     fontSize: 18,
